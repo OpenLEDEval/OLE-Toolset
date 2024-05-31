@@ -6,6 +6,7 @@ Center LED Color Accuracy Report
 from dataclasses import dataclass
 from functools import partial
 from textwrap import dedent
+from typing import Callable
 
 import numpy as np
 import numpy.typing as npt
@@ -117,6 +118,7 @@ class ColourPrecisionAnalysis:
                 ),
                 ~np.any(np.isnan([m.XYZ for m in self._data.measurements]), axis=1),
                 ~np.any(np.isinf([m.XYZ for m in self._data.measurements]), axis=1),
+                ~np.any(self._data.test_colors == self._data.test_colors.max(), axis=1),
             ),
             axis=0,
         )
@@ -387,9 +389,10 @@ class ColourPrecisionAnalysis:
             (self.measured_colors["ICtCp"] - self.expected_colors["ICtCp"])
             * (1, 0.5, 1)
         )
-        err["dI"] = 720 * norm(
-            (self.measured_colors["ICtCp"] - self.expected_colors["ICtCp"]) * (1, 0, 0)
+        err["dI"] = 720 * (
+            self.measured_colors["ICtCp"][:, 0] - self.expected_colors["ICtCp"][:, 0]
         )
+
         err["dChromatic"] = 720 * norm(
             (self.measured_colors["ICtCp"] - self.expected_colors["ICtCp"])
             * (0, 0.5, 1)
@@ -461,8 +464,15 @@ class ColourPrecisionAnalysis:
 
         adapting_luminance: float  # luminance of 20% grey object
 
-    def __init__(self, measurements: MeasurementList):
+    def __init__(
+        self,
+        measurements: MeasurementList,
+        eotf: Callable[[npt.ArrayLike], npt.ArrayLike] = pq.eotf_ST2084,
+        eotf_inv: Callable[[npt.ArrayLike], npt.ArrayLike] = pq.eotf_inverse_ST2084,
+    ):
         self._data: MeasurementList = measurements
+        self.eotf: Callable[[npt.ArrayLike], npt.ArrayLike] = eotf
+        self.eotf_inv: Callable[[npt.ArrayLike], npt.ArrayLike] = eotf_inv
 
         self.analysis_conditions = self.AnalysisConditions(
             adapting_luminance=500 / (5 * np.pi)

@@ -2,6 +2,8 @@
 CLI Script for running automated display measurements
 """
 
+from ole.test_colors import TestColorsConfig
+
 
 def main():
     """
@@ -159,9 +161,8 @@ def main():
 
     parser.add_argument(
         "--use-virtual",
-        action="store_const",
+        action="store_true",
         help="Set to flag to use virtual spectrometer (for debugging TPG)",
-        const=-1,
         required=False,
     )
 
@@ -203,25 +204,47 @@ def main():
         type=str,
     )
 
-    args = parser.parse_args()
-    tcc = PQ_TestColorsConfig(
-        ramp_samples=args.grey_n,
-        ramp_repeats=1,
-        mesh_size=args.cube_n,
-        blacks=args.black_n,
-        whites=args.white_n,
-        random=args.random,
-        quantized_bits=args.bit_depth,
-        first_light=args.min_above_black,
-        max_nits=args.max_nits,
+    parser.add_argument(
+        "--sdr",
+        action="store_true",
+        help="Set to flag to use SDR based measurements",
+        required=False,
     )
+
+    args = parser.parse_args()
+
+    if args.sdr:
+        tcc = TestColorsConfig(
+            ramp_samples=args.grey_n,
+            ramp_repeats=1,
+            mesh_size=args.cube_n,
+            blacks=args.black_n,
+            whites=args.white_n,
+            random=args.random,
+            quantized_bits=args.bit_depth,
+            first_light=args.min_above_black,
+        )
+    else:
+        tcc = PQ_TestColorsConfig(
+            ramp_samples=args.grey_n,
+            ramp_repeats=1,
+            mesh_size=args.cube_n,
+            blacks=args.black_n,
+            whites=args.white_n,
+            random=args.random,
+            quantized_bits=args.bit_depth,
+            first_light=args.min_above_black,
+            max_nits=args.max_nits,
+        )
+
     test_colors = generate_colors(tcc)
     test_colors.colors = (test_colors.colors * (1023 / tcc.quantized_range)).astype(
         np.int16
     )
+
     tpg = TPGController(args.tpg_ip)
 
-    if args.use_virtual == -1:
+    if args.use_virtual:
         meter = VirtualSpectrometer()
     else:
         meter = cr.CRSpectrometer.discover()

@@ -2,6 +2,7 @@
 Implements generation of test color sets. Usually used to generate control lists
 for a test pattern generator.
 """
+
 from dataclasses import dataclass
 
 import numpy as np
@@ -59,7 +60,11 @@ class TestColorsConfig:
         int
             hash((int, int, int, etc... ))
         """
-        return hash(self.__dict__.values())
+        xxh = xxhash.xxh3_64()
+        for v in self.__dict__.values():
+            xxh.update(str(v))
+
+        return xxh.intdigest()
 
 
 @dataclass
@@ -85,12 +90,7 @@ class PQ_TestColorsConfig(TestColorsConfig):
         )
 
         self.first_light_data_value = int(
-            (
-                pq.eotf_inverse_ST2084(self.first_light)
-                * self.quantized_range
-                // 1
-            )
-            + 1
+            (pq.eotf_inverse_ST2084(self.first_light) * self.quantized_range // 1) + 1
         )
 
     def __hash__(self):
@@ -140,18 +140,14 @@ def generate_colors(
         config.max_channel_value,
         config.ramp_samples,
     )
-    ramp = np.array(
-        (0, *ramp, config.max_channel_value + 1, config.quantized_range)
-    )
+    ramp = np.array((0, *ramp, config.max_channel_value + 1, config.quantized_range))
     ramp = ramp.reshape((-1, 1))
 
     ramps = np.zeros((ramp.shape[0] * 4, 3))
     for idx in range(3):
         ramps[ramp.shape[0] * idx : ramp.shape[0] * (idx + 1), idx] = ramp.T
     idx = 3
-    ramps[ramp.shape[0] * idx : ramp.shape[0] * (idx + 1), :] = np.tile(
-        ramp, (1, 3)
-    )
+    ramps[ramp.shape[0] * idx : ramp.shape[0] * (idx + 1), :] = np.tile(ramp, (1, 3))
 
     ramps = np.tile(ramps, (config.ramp_repeats, 1))
 
@@ -161,9 +157,7 @@ def generate_colors(
         config.mesh_size,
     )
     mesh = np.meshgrid(mesh_ramp, mesh_ramp, mesh_ramp)
-    mesh = np.asarray(
-        [mesh[0].flatten(), mesh[1].flatten(), mesh[2].flatten()]
-    ).T
+    mesh = np.asarray([mesh[0].flatten(), mesh[1].flatten(), mesh[2].flatten()]).T
 
     blacks = np.zeros((config.blacks, 3))
     whites = np.ones((config.whites, 3)) * config.max_channel_value
