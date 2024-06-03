@@ -151,11 +151,12 @@ def generate_colors(
 
     ramps = np.tile(ramps, (config.ramp_repeats, 1))
 
-    mesh_ramp = np.linspace(
+    mesh_ramp = 0, *np.linspace(
         config.first_light_data_value,
         config.max_channel_value,
         config.mesh_size,
     )
+    mesh_ramp = [0, *mesh_ramp]
     mesh = np.meshgrid(mesh_ramp, mesh_ramp, mesh_ramp)
     mesh = np.asarray([mesh[0].flatten(), mesh[1].flatten(), mesh[2].flatten()]).T
 

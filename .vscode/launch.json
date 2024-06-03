@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug measure_display",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "ole.scripts.measure_display",
+            "args": ["--tpg-ip", "10.58.24.204", "--sdr"]
+        },
+        {
+          "name": "Debug analyze_display",
+          "type": "debugpy",
+          "request": "launch",
+          "module": "ole.scripts.analyze_display_measurements",
+          "args": ["data/DS/Lunch_Test.csmf"]
+      }
+    ]
+}

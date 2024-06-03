@@ -295,7 +295,7 @@ def main():
         notes=MeasurementList_Notes(notes=args.tile_name),
     )
 
-    print(f"File Saved to: {save_path:s}")
+    print(f"File Saved to: {save_path!s:s}")
 
 
 if __name__ == "__main__":
