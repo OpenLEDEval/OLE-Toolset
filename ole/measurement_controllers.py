@@ -8,10 +8,11 @@ import time
 from collections.abc import Iterable
 from dataclasses import dataclass
 from functools import cached_property
-from typing import Callable, cast
+from typing import Any, Callable, cast
 
 import numpy as np
 from numpy.typing import ArrayLike
+from specio.colorimeters.common import Colorimeter, ColorimeterMeasurement
 from specio.measurement import Measurement
 from specio.spectrometers import SpecRadiometer
 
@@ -40,7 +41,7 @@ class ProgressUpdate:
     """
 
     progress_factor: float
-    last_measurement: Measurement
+    last_measurement: Any
     num_colors: int
 
 
@@ -107,7 +108,7 @@ class DisplayMeasureController:
     def __init__(
         self,
         tpg: TPGController,
-        cr: SpecRadiometer,
+        cr: SpecRadiometer | Colorimeter,
         color_list: TestColors,
         random_colors_duration: float | None = None,
         progress_callbacks: Iterable[ProgressCallback] = set(),
@@ -213,7 +214,9 @@ class DisplayMeasureController:
     class MeasurementError(Exception):
         """Raised if a measurement fails after multiple attempts"""
 
-    def _get_measurement(self, test_color: ArrayLike, n=10) -> Measurement:
+    def _get_measurement(
+        self, test_color: ArrayLike, n=10
+    ) -> Measurement | ColorimeterMeasurement:
         """Trigger a robust measurement of a specific test color from the
         spectrometer.
 
@@ -250,12 +253,14 @@ class DisplayMeasureController:
             break
         if measurement is None:
             raise self.MeasurementError(
-                f"Could not get measurement from spectrometer after {n:d} attempts"
+                f"Could not get measurement from hardware after {n:d} attempts"
             ) from last_exception
 
         return measurement
 
-    def run_measurements(self, warmup_time: float = 0) -> list[Measurement]:
+    def run_measurements(
+        self, warmup_time: float = 0
+    ) -> list[Measurement] | list[ColorimeterMeasurement]:
         """Start and run the measurement cycle. This function blocks until the
         measurement cycle is complete!
 
@@ -272,7 +277,7 @@ class DisplayMeasureController:
         """
         self.generate_random_colors(warmup_time)
 
-        measurements: list[Measurement] = []
+        measurements = []
         for idx, c in enumerate(self.color_list.colors):
             m = self._get_measurement(c)
             measurements.append(m)
