@@ -25,10 +25,10 @@ from colour.models.rgb.ictcp import XYZ_to_ICtCp
 from colour.models.rgb.transfer_functions import st_2084 as pq
 from colour.plotting.common import XYZ_to_plotting_colourspace
 from colour.temperature.ohno2013 import XYZ_to_CCT_Ohno2013
-from specio.fileio import (
-    MeasurementList,
+from specio.serialization.csmf import (
+    Measurement_List,
     MeasurementList_Notes,
-    load_measurements,
+    load_csmf_file,
 )
 
 
@@ -466,11 +466,11 @@ class ColourPrecisionAnalysis:
 
     def __init__(
         self,
-        measurements: MeasurementList,
+        measurements: Measurement_List,
         eotf: Callable[[npt.ArrayLike], npt.ArrayLike] = pq.eotf_ST2084,
         eotf_inv: Callable[[npt.ArrayLike], npt.ArrayLike] = pq.eotf_inverse_ST2084,
     ):
-        self._data: MeasurementList = measurements
+        self._data: Measurement_List = measurements
         self.eotf: Callable[[npt.ArrayLike], npt.ArrayLike] = eotf
         self.eotf_inv: Callable[[npt.ArrayLike], npt.ArrayLike] = eotf_inv
 
@@ -497,7 +497,7 @@ def analyze_measurements_from_file(filename: str) -> ColourPrecisionAnalysis:
     -------
     ColourPrecisionAnalysis
     """
-    measurements = load_measurements(filename)
+    measurements = load_csmf_file(filename)
 
     fundamentalData = ColourPrecisionAnalysis(measurements)
     return fundamentalData

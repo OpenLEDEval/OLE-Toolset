@@ -13,7 +13,7 @@ from typing import Any, Callable, cast
 import numpy as np
 from numpy.typing import ArrayLike
 from specio.colorimeters.common import Colorimeter, ColorimeterMeasurement
-from specio.measurement import Measurement
+from specio.measurement import SPDMeasurement
 from specio.spectrometers import SpecRadiometer
 
 from ole.test_colors import (
@@ -216,7 +216,7 @@ class DisplayMeasureController:
 
     def _get_measurement(
         self, test_color: ArrayLike, n=10
-    ) -> Measurement | ColorimeterMeasurement:
+    ) -> SPDMeasurement | ColorimeterMeasurement:
         """Trigger a robust measurement of a specific test color from the
         spectrometer.
 
@@ -260,7 +260,7 @@ class DisplayMeasureController:
 
     def run_measurements(
         self, warmup_time: float = 0
-    ) -> list[Measurement] | list[ColorimeterMeasurement]:
+    ) -> list[SPDMeasurement] | list[ColorimeterMeasurement]:
         """Start and run the measurement cycle. This function blocks until the
         measurement cycle is complete!
 

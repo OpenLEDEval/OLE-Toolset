@@ -13,7 +13,7 @@ def main():
     from pathlib import Path
 
     from matplotlib import pyplot as plt
-    from specio.fileio import MeasurementList_Notes
+    from specio.serialization.csmf import MeasurementList_Notes
 
     from ole.ETC import (
         analyze_measurements_from_file,

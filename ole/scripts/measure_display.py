@@ -2,37 +2,38 @@
 CLI Script for running automated display measurements
 """
 
-from ole.test_colors import TestColorsConfig
+import argparse
+from pathlib import Path
+from typing import cast
+
+import numpy as np
+import specio.spectrometers.colorimetry_research as cr
+from specio.measurement import SPDMeasurement
+from specio.serialization.csmf import (
+    Measurement_List,
+    MeasurementList_Notes,
+    save_csmf_file,
+)
+from specio.spectrometers.common import VirtualSpectrometer
+
+from ole.ETC.analysis import ColourPrecisionAnalysis
+from ole.measurement_controllers import (
+    DisplayMeasureController,
+    ProgressPrinter,
+)
+from ole.test_colors import (
+    PQ_TestColorsConfig,
+    TestColorsConfig,
+    generate_colors,
+)
+from ole.tpg_controller import TPGController
+from ole.utilities import datetime_now
 
 
 def main():
     """
     CLI Script for running automated display measurements
     """
-
-    import argparse
-    from pathlib import Path
-
-    import numpy as np
-    import specio.spectrometers.colorimetry_research as cr
-    from specio.fileio import (
-        MeasurementList,
-        MeasurementList_Notes,
-        save_measurements,
-    )
-    from specio.spectrometers.common import VirtualSpectrometer
-
-    from ole.ETC.analysis import ColourPrecisionAnalysis
-    from ole.measurement_controllers import (
-        DisplayMeasureController,
-        ProgressPrinter,
-    )
-    from ole.test_colors import (
-        PQ_TestColorsConfig,
-        generate_colors,
-    )
-    from ole.tpg_controller import TPGController
-    from ole.utilities import datetime_now
 
     program_description = """
     Analyze a display for colorimetric linearity and accuracy. This program does
@@ -263,37 +264,32 @@ def main():
     save_path = save_path.with_suffix(".csmf")
 
     measurements = dmc.run_measurements(warmup_time=args.warmup * 60)
+    measurements = cast(list[SPDMeasurement], measurements)
 
     tpg.send_color((0, 0, 0))
 
     try:
         data_analysis = ColourPrecisionAnalysis(
-            MeasurementList(
+            Measurement_List(
                 test_colors=test_colors.colors,
                 order=test_colors.order.tolist(),
-                measurements=np.asarray(measurements),
+                measurements=measurements,
             )
         )
         print(data_analysis)  # noqa: T201
     except Exception as e:
-        save_measurements(
-            str(save_path.resolve()),
+        ml = Measurement_List(
             measurements=measurements,
-            order=test_colors.order.tolist(),
-            testColors=test_colors.colors,
-            notes=MeasurementList_Notes(notes=args.tile_name),
+            order=test_colors.order,
+            test_colors=test_colors.colors,
+            metadata=MeasurementList_Notes(notes=args.tile_name),
         )
+        save_csmf_file(str(save_path.resolve()), ml)
         raise RuntimeError(
             f"Failed to analyze measurements. Saving file to: {save_path:s}"
         ) from e
 
-    save_measurements(
-        str(save_path.resolve()),
-        measurements=measurements,
-        order=test_colors.order.tolist(),
-        testColors=test_colors.colors,
-        notes=MeasurementList_Notes(notes=args.tile_name),
-    )
+    save_csmf_file(str(save_path.resolve()), ml=ml)
 
     print(f"File Saved to: {save_path!s:s}")
 
