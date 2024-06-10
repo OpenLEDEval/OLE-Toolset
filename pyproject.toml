@@ -9,6 +9,7 @@ packages = [{ include = "ole" }]
 ole_measure = 'ole.scripts.measure_display:main'
 ole_analyze = 'ole.scripts.analyze_display_measurements:main'
 ole_anonymize = 'ole.scripts.strip_metadata:main'
+csmf_doctor = 'ole.scripts.csmf_doctor:main'
 
 [tool.poetry.dependencies]
 requests = "^2.31.0"

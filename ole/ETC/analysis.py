@@ -6,7 +6,6 @@ Center LED Color Accuracy Report
 from dataclasses import dataclass
 from functools import partial
 from textwrap import dedent
-from typing import Callable
 
 import numpy as np
 import numpy.typing as npt
@@ -76,21 +75,20 @@ class ColourPrecisionAnalysis:
         -------
         NDArrayBoolean
         """
+
         noise = np.mean(
-            np.max(
-                np.sum(
-                    [m.spd.values for m in self.black["measurements"]]
-                    - self.black["spd"].values,
-                    axis=1,
-                ),
-                0,
+            np.clip(
+                [m.power for m in self.black["measurements"]] - self.black["power"],
+                a_min=0,
+                a_max=None,
             )
-        )
+        )  # type: ignore
+
         snr = 10 * np.log10(
             np.asarray(
                 [max(m.power - self.black["power"], 0) for m in self._data.measurements]
             )
-            / noise
+            / self.black["power"]
         )
         return snr > 3
 
@@ -139,9 +137,9 @@ class ColourPrecisionAnalysis:
 
         from scipy.signal import savgol_filter
 
-        mask = np.all(self._data.test_colors == (0, 0, 0), axis=1)
-
         tmp = self._black = {}
+        tmp["mask"] = mask = np.all(self._data.test_colors == (0, 0, 0), axis=1)
+
         tmp["measurements"] = measurements = self._data.measurements[mask]
         spd_shape = measurements[0].spd.shape
 
@@ -180,7 +178,7 @@ class ColourPrecisionAnalysis:
         for idx, m in enumerate(color_masks):
             color_measurements = self._data.measurements[m & self._analysis_mask]
             color_XYZ = [t.XYZ for t in color_measurements] - self.black["XYZ"]
-            xys = XYZ_to_xy(color_XYZ)
+            xys = XYZ_to_xy(np.clip(color_XYZ, 0, None))
 
             try:
                 # Find mean chromaticity without being influenced by outliers
@@ -467,12 +465,8 @@ class ColourPrecisionAnalysis:
     def __init__(
         self,
         measurements: Measurement_List,
-        eotf: Callable[[npt.ArrayLike], npt.ArrayLike] = pq.eotf_ST2084,
-        eotf_inv: Callable[[npt.ArrayLike], npt.ArrayLike] = pq.eotf_inverse_ST2084,
     ):
         self._data: Measurement_List = measurements
-        self.eotf: Callable[[npt.ArrayLike], npt.ArrayLike] = eotf
-        self.eotf_inv: Callable[[npt.ArrayLike], npt.ArrayLike] = eotf_inv
 
         self.analysis_conditions = self.AnalysisConditions(
             adapting_luminance=500 / (5 * np.pi)

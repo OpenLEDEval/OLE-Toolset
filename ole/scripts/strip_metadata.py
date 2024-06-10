@@ -20,7 +20,7 @@ def main():
     args = parser.parse_args()
 
     file_path = Path(args.file)
-    file_data = load_csmf_file(str(file_path))
+    file_data = load_csmf_file(file_path)
 
     output_path = file_path.parent if args.out_dir is None else Path(args.out_dir)
 
