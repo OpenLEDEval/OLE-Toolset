@@ -6,6 +6,7 @@ Center LED Color Accuracy Report
 from dataclasses import dataclass
 from functools import partial
 from textwrap import dedent
+from typing import Callable
 
 import numpy as np
 import numpy.typing as npt
@@ -24,6 +25,7 @@ from colour.models.rgb.ictcp import XYZ_to_ICtCp
 from colour.models.rgb.transfer_functions import st_2084 as pq
 from colour.plotting.common import XYZ_to_plotting_colourspace
 from colour.temperature.ohno2013 import XYZ_to_CCT_Ohno2013
+from sklearn.covariance import EllipticEnvelope, EmpiricalCovariance
 from specio.serialization.csmf import (
     Measurement_List,
     MeasurementList_Notes,
@@ -172,8 +174,6 @@ class ColourPrecisionAnalysis:
             )
         )
 
-        from sklearn.covariance import EllipticEnvelope, EmpiricalCovariance
-
         xy = np.zeros((4, 2))
         for idx, m in enumerate(color_masks):
             color_measurements = self._data.measurements[m & self._analysis_mask]
@@ -182,7 +182,13 @@ class ColourPrecisionAnalysis:
 
             try:
                 # Find mean chromaticity without being influenced by outliers
-                cov = EllipticEnvelope().fit(xys)
+                #
+                # By experience, this is typically very low in ole_measurements.
+                cov = EllipticEnvelope(
+                    contamination=1 / len(color_measurements),
+                    support_fraction=(len(color_measurements) - 1)
+                    / len(color_measurements),
+                ).fit(xys)
                 xy[idx, :] = cov.location_
             except ValueError:
                 # Covariance fit failed, probably because the data is well
@@ -264,8 +270,8 @@ class ColourPrecisionAnalysis:
             [m.XYZ - self.black["XYZ"] for m in single_color_measurements],
             axis=0,
         )
-        white["nits_quantized"] = pq.eotf_ST2084(
-            np.round(pq.eotf_inverse_ST2084(white["peak"][1]) * 1023) / 1023
+        white["nits_quantized"] = self.eotf(
+            np.round(self.eotf_inv(white["peak"][1]) * 1023) / 1023
         )
 
         return self._white
@@ -297,7 +303,7 @@ class ColourPrecisionAnalysis:
         if hasattr(self, "_test_colors_linear"):
             return self._test_colors_linear
 
-        tmp = self._test_colors_linear = pq.eotf_ST2084(self.test_colors.T / 1023)
+        tmp = self._test_colors_linear = self.eotf(self.test_colors.T / 1023)
         clipping_mask = tmp > self.white["nits_quantized"]
         tmp[clipping_mask] = self.white["nits_quantized"]
         return self._test_colors_linear
@@ -465,6 +471,8 @@ class ColourPrecisionAnalysis:
     def __init__(
         self,
         measurements: Measurement_List,
+        eotf: Callable[[NDArrayFloat], NDArrayFloat] = pq.eotf_ST2084,
+        eotf_inv: Callable[[NDArrayFloat], NDArrayFloat] = pq.eotf_inverse_ST2084,
     ):
         self._data: Measurement_List = measurements
 
@@ -472,6 +480,8 @@ class ColourPrecisionAnalysis:
             adapting_luminance=500 / (5 * np.pi)
         )
         self.shortname = None
+        self.eotf = eotf
+        self.eotf_inv = eotf_inv
         if np.ptp(self._data.test_colors) > 4096:
             # Special case where a few data files were created with earlier
             # worse versions of specio
