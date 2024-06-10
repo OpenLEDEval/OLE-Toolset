@@ -35,9 +35,10 @@ def main():
         "-o",
         "--out",
         help=(
-            "The output file name. Will be appended to .pdf if the file "
-            "extension is excluded. If the output is a directory, the file "
-            "name will be determined by the contents of the measurements."
+            "The output file name. If the output is not a file name with the "
+            "extension .pdf, a directory will be created and the file name "
+            "will be determined by the contents of the measurement file name "
+            "will be determined by the contents of the measurements."
         ),
         default=None,
     )
@@ -81,15 +82,17 @@ def main():
     )
 
     # Determine output file name
-    if args.out is None:
-        out_file_name = Path(in_file.parent)
-    else:
+    if args.out:
         out_file_name = Path(args.out)
-        if not out_file_name.is_file() and not out_file_name.exists():
+        if out_file_name.suffix == ".pdf":
+            out_file_name.parent.mkdir(parents=True, exist_ok=True)
+        elif out_file_name.suffix != "":
+            raise RuntimeError("File name must end in .pdf")
+        else:
             out_file_name.mkdir(parents=True, exist_ok=True)
-
-    if out_file_name.is_dir():
-        out_file_name = out_file_name.joinpath(get_valid_filename(data.shortname))
+            out_file_name = out_file_name.joinpath(get_valid_filename(data.shortname))
+    else:
+        out_file_name = in_file.with_suffix(".pdf")
 
     out_file_name = out_file_name.with_suffix(".pdf")
 
