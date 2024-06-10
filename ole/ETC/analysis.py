@@ -88,9 +88,9 @@ class ColourPrecisionAnalysis:
             np.asarray(
                 [max(m.power - self.black["power"], 0) for m in self._data.measurements]
             )
-            / self.black["power"]
+            / noise
         )
-        return snr > 3
+        return snr > 10
 
     @property
     def _analysis_mask(self) -> NDArrayBoolean:
