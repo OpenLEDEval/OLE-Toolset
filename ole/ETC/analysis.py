@@ -5,6 +5,7 @@ Center LED Color Accuracy Report
 
 from dataclasses import dataclass
 from functools import partial
+from pathlib import Path
 from textwrap import dedent
 from typing import Callable
 
@@ -22,7 +23,7 @@ from colour.models.cie_luv import Luv_to_uv, XYZ_to_Luv
 from colour.models.cie_xyy import XYZ_to_xy, xy_to_XYZ
 from colour.models.rgb.derivation import normalised_primary_matrix
 from colour.models.rgb.ictcp import XYZ_to_ICtCp
-from colour.models.rgb.transfer_functions import st_2084 as pq
+from colour.models.rgb.transfer_functions import st_2084
 from colour.plotting.common import XYZ_to_plotting_colourspace
 from colour.temperature.ohno2013 import XYZ_to_CCT_Ohno2013
 from sklearn.covariance import EllipticEnvelope, EmpiricalCovariance
@@ -68,6 +69,27 @@ class ColourPrecisionAnalysis:
     """Analyze a measurement list for various colorimetric properties, like
     dE2000 and dE ITP. Assuming PQ encoded test patterns.
     """
+
+    def __init__(
+        self,
+        measurements: Measurement_List,
+        eotf: Callable[[NDArrayFloat | float], NDArrayFloat] = st_2084.eotf_ST2084,
+        eotf_inv: Callable[
+            [NDArrayFloat | float], NDArrayFloat
+        ] = st_2084.eotf_inverse_ST2084,
+    ):
+        self._data: Measurement_List = measurements
+
+        self.analysis_conditions = self.AnalysisConditions(
+            adapting_luminance=500 / (5 * np.pi)
+        )
+        self.shortname = None
+        self.eotf = eotf
+        self.eotf_inv = eotf_inv
+        if np.ptp(self._data.test_colors) > 4096:
+            # Special case where a few data files were created with earlier
+            # worse versions of specio
+            self._data.test_colors = self._data.test_colors / 255.0
 
     @property
     def _snr_mask(self) -> NDArrayBoolean:
@@ -468,27 +490,8 @@ class ColourPrecisionAnalysis:
 
         adapting_luminance: float  # luminance of 20% grey object
 
-    def __init__(
-        self,
-        measurements: Measurement_List,
-        eotf: Callable[[NDArrayFloat], NDArrayFloat] = pq.eotf_ST2084,
-        eotf_inv: Callable[[NDArrayFloat], NDArrayFloat] = pq.eotf_inverse_ST2084,
-    ):
-        self._data: Measurement_List = measurements
 
-        self.analysis_conditions = self.AnalysisConditions(
-            adapting_luminance=500 / (5 * np.pi)
-        )
-        self.shortname = None
-        self.eotf = eotf
-        self.eotf_inv = eotf_inv
-        if np.ptp(self._data.test_colors) > 4096:
-            # Special case where a few data files were created with earlier
-            # worse versions of specio
-            self._data.test_colors = self._data.test_colors / 255.0
-
-
-def analyze_measurements_from_file(filename: str) -> ColourPrecisionAnalysis:
+def analyze_measurements_from_file(filename: str | Path) -> ColourPrecisionAnalysis:
     """Load the file at `filename` and return the ColorPrecisionAnalysis
 
     Parameters

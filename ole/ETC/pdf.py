@@ -165,6 +165,8 @@ def plot_eotf_accuracy(data: ColourPrecisionAnalysis, ax: Axes | None = None) ->
         fig = plt.figure()
         ax = fig.add_subplot()
 
+    max_nits = np.max([m[0][1] for m in data.grey["avg_scale"]])
+
     ax.scatter(
         data.grey["data_levels"],
         data.grey["nits"],
@@ -174,46 +176,54 @@ def plot_eotf_accuracy(data: ColourPrecisionAnalysis, ax: Axes | None = None) ->
     )
     ax.set_yscale("log", base=2)
     ax.set_xscale("log", base=2)
-    ax.set_xlim(pq.eotf_inverse_ST2084(0.1) * 1023, 1024)  # type: ignore
-    ax.set_ylim(bottom=0.1, top=10000)
 
-    ax.set_yticks(2.0 ** np.arange(-3, 14))
+    if data.eotf is pq.eotf_ST2084:
+        ax.set_xlim(pq.eotf_inverse_ST2084(0.1) * 1023, 1023)  # type: ignore
+        ax.set_ylim(bottom=0.1, top=10000, auto=False)
+        ax.set_yticks(2.0 ** np.arange(-3, 14))
+    else:
+        ax.set_xscale("linear")
+        ax.set_xlim(0, 1023)
+        ax.set_ylim(bottom=0, top=max_nits, auto=False)
+        ax.set_yticks(2.0 ** np.arange(-3, np.ceil(np.log2(max_nits)) + 1))
+
     ax.set_xticks((2.0 ** np.arange(6, 11)) - 1, ["63", "127", "255", "511", "1023"])
 
-    x_1000nits = pq.eotf_inverse_ST2084(1000) * 1023
+    x_1000nits = data.eotf_inv(1000) * 1023
     ax.plot([x_1000nits, x_1000nits], [0, 1000], color="#5a9c9e")
     ax.text(
-        x_1000nits + 25,  # type: ignore
+        x_1000nits - 25,  # type: ignore
         0.15,
         "1000 nits",
         fontsize=8,
-        ha="left",
+        ha="right",
         color="#5a9c9e",
         rotation="vertical",
     )
 
     ax.plot(
         np.arange(0, 1023),
-        pq.eotf_ST2084(np.arange(0, 1023) / 1023),
+        data.eotf(np.arange(0, 1023) / 1023),
         color=[1, 0, 0],
     )
-    ax.set_title("PQ EOTF Performance")
-    ax.set_xlabel("10-bit Code Value (Log)")
+    ax.set_title("EOTF Performance")
+    if data.eotf is pq.eotf_ST2084:
+        ax.set_xlabel("10-bit Code Value (Log)")
+    else:
+        ax.set_xlabel("10-bit Code Value")
     ax.set_ylabel("Luminance (nits, Log)")
 
-    max_nits = np.max([m[0][1] for m in data.grey["avg_scale"]])
-
     ax.plot(
-        [63, pq.eotf_inverse_ST2084(max_nits) * 1023],  # type: ignore
+        [0, data.eotf_inv(max_nits) * 1023],  # type: ignore
         [max_nits, max_nits],
         color="#6f5481",
         zorder=50,
     )
     ax.text(
         64,
-        max_nits + 2**11 * 0.1,
+        max_nits - 2**11 * 0.11,
         f"Tile Max: {max_nits:.0f} nits",
-        va="bottom",
+        va="top",
         fontsize=8,
         color="#6f5481",
     )
@@ -248,7 +258,7 @@ def plot_wp_accuracy(
         temp_spec = fig_spec[1].subgridspec(2, 1, hspace=0.15)
         axs = [fig.add_subplot(temp_spec[0]), fig.add_subplot(temp_spec[1])]
 
-    xticks = pq.eotf_inverse_ST2084(10.0 ** np.arange(-1, 5)) * 1023
+    xticks = pq.eotf_inverse_ST2084(10.0 ** np.arange(-1, 5))
     xtick_labels = ["0.1"] + [f"{(10.0 ** m):.0f}" for m in np.arange(0, 5)]
     xtick_minor = (
         pq.eotf_inverse_ST2084(
@@ -316,7 +326,10 @@ def plot_wp_accuracy(
             aspect_multiplier=0.5,  # type: ignore
         )
 
-        ax.scatter(data.grey["uniques"][0], cct_list[:, 0])
+        ax.scatter(
+            pq.eotf_inverse_ST2084(data.eotf(data.grey["uniques"][0] / 1023)) * 1023,
+            cct_list[:, 0],
+        )
 
         arrow_size = abs(np.diff(ax.get_ylim()))[0] * 0.15
         # fmt: off
@@ -356,7 +369,10 @@ def plot_wp_accuracy(
         ax.text(pq.eotf_inverse_ST2084(0.11) * 1013, 0.004, "D65", fontsize=8)
 
         x_max_nits = plot_max_nits_line(ax)
-        ax.scatter(data.grey["uniques"][0], cct_list[:, 1])
+        ax.scatter(
+            pq.eotf_inverse_ST2084(data.eotf(data.grey["uniques"][0] / 1023)) * 1023,
+            cct_list[:, 1],
+        )
         _plot_y_tolerance_bg(
             ax,
             tol_bounds=[
