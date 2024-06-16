@@ -210,12 +210,13 @@ class ColourPrecisionAnalysis:
                     contamination=1 / len(color_measurements),
                     support_fraction=(len(color_measurements) - 1)
                     / len(color_measurements),
+                    store_precision=False,
                 ).fit(xys)
                 xy[idx, :] = cov.location_
             except ValueError:
                 # Covariance fit failed, probably because the data is well
                 # clustered, traditional covariance can be used instead.
-                cov = EmpiricalCovariance().fit(xys)
+                cov = EmpiricalCovariance(store_precision=False).fit(xys)
                 xy[idx, :] = cov.location_
 
         # Fit NPM using colour

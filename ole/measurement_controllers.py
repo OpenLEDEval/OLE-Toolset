@@ -13,8 +13,8 @@ from typing import Any, Callable, cast
 import numpy as np
 from numpy.typing import ArrayLike
 from specio.colorimeters.common import Colorimeter, ColorimeterMeasurement
-from specio.measurement import SPDMeasurement
 from specio.spectrometers import SpecRadiometer
+from specio.spectrometers.common import SPDMeasurement
 
 from ole.test_colors import (
     TestColors,

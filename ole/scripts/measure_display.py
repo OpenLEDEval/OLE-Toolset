@@ -8,13 +8,12 @@ from typing import cast
 
 import numpy as np
 import specio.spectrometers.colorimetry_research as cr
-from specio.measurement import SPDMeasurement
 from specio.serialization.csmf import (
     Measurement_List,
     MeasurementList_Notes,
     save_csmf_file,
 )
-from specio.spectrometers.common import VirtualSpectrometer
+from specio.spectrometers.common import SPDMeasurement, VirtualSpectrometer
 
 from ole.ETC.analysis import ColourPrecisionAnalysis
 from ole.measurement_controllers import (

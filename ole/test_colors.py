@@ -44,13 +44,13 @@ class TestColorsConfig:
     random: int = 0
 
     quantized_bits: int = 10
-    first_light: int = 0
+    first_light: float = 0
 
     def __post_init__(self):
         """Generate the derived parameters"""
         self.quantized_range = int(2**self.quantized_bits - 1)
         self.max_channel_value: int = self.quantized_range
-        self.first_light_data_value: int = 0
+        self.first_light_data_value: int = int(self.first_light)
 
     def __hash__(self):
         """Calculate a hash value based on all attribute values

@@ -3,16 +3,13 @@
   "rewrap.autoWrap.enabled": true,
   "editor.detectIndentation": false,
   "editor.wrappingIndent": "indent",
-  "editor.rulers": [
-    80
-  ],
+  "editor.rulers": [80],
   "editor.formatOnSave": true,
   "editor.renderWhitespace": "all",
   "python.testing.pytestEnabled": true,
   "autoDocstring.docstringFormat": "numpy",
   "python.languageServer": "Pylance",
   "python.analysis.indexing": true,
-  "python.analysis.completeFunctionParens": true,
   "cSpell.userWords": [
     "aeropress",
     "ASTM",
@@ -40,44 +37,22 @@
     "tristimulus",
     "whitepoint"
   ],
-  "python.analysis.typeCheckingMode": "basic",
   "python.analysis.logLevel": "Warning",
-  "python.analysis.autoFormatStrings": true,
   "python.analysis.packageIndexDepths": [
     {
+      "name": "google",
+      "depth": 4,
+      "includeAllSymbols": false
+    },
+    {
       "name": "colour",
-      "depth": 3,
+      "depth": 4,
       "includeAllSymbols": false
     },
     {
       "name": "colour_datasets",
-      "depth": 3,
+      "depth": 2,
       "includeAllSymbols": false
-    },
-    {
-      "name": "numpy",
-      "depth": 3
-    },
-    {
-      "name": "sklearn",
-      "depth": 3
-    },
-    {
-      "name": "matplotlib",
-      "depth": 40,
-      "includeAllSymbols": true
-    },
-    {
-      "name": "scipy",
-      "depth": 3
-    },
-    {
-      "name": "django",
-      "depth": 2
-    },
-    {
-      "name": "flask",
-      "depth": 2
     }
   ],
   "files.exclude": {
@@ -108,4 +83,9 @@
     "editor.defaultFormatter": "tamasfe.even-better-toml"
   },
   "debugpy.debugJustMyCode": false,
+  "protoc": {
+    "options": ["--proto_path=colour-specio"]
+  },
+  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.ignore": ["colour-science", "colour-datasets", "*_pb2.py"]
 }
