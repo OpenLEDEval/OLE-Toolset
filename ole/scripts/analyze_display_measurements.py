@@ -13,7 +13,7 @@ def main():
     from pathlib import Path
 
     from matplotlib import pyplot as plt
-    from specio.serialization.csmf import MeasurementList_Notes
+    from specio.serialization.csmf import MeasurementListNotes
 
     from ole.ETC import (
         analyze_measurements_from_file,
@@ -72,7 +72,7 @@ def main():
     data = analyze_measurements_from_file(str(in_file))
 
     if args.strip_details:
-        data.metadata = MeasurementList_Notes(software=None)
+        data.metadata = MeasurementListNotes(software=None)
         data.shortname = f"ETC Display Analysis - {data.shortname}"
 
     reflectance = (

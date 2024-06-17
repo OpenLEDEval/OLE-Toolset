@@ -4,16 +4,15 @@ CLI Script for running automated display measurements
 
 import argparse
 from pathlib import Path
-from typing import cast
 
 import numpy as np
 import specio.spectrometers.colorimetry_research as cr
 from specio.serialization.csmf import (
-    Measurement_List,
-    MeasurementList_Notes,
+    MeasurementList,
+    MeasurementListNotes,
     save_csmf_file,
 )
-from specio.spectrometers.common import SPDMeasurement, VirtualSpectrometer
+from specio.spectrometers.common import VirtualSpectrometer
 
 from ole.ETC.analysis import ColourPrecisionAnalysis
 from ole.measurement_controllers import (
@@ -263,13 +262,13 @@ def main():
     save_path = save_path.with_suffix(".csmf")
 
     measurements = dmc.run_measurements(warmup_time=args.warmup * 60)
-    measurements = cast(list[SPDMeasurement], measurements)
+    measurements = np.asarray(measurements)
 
     tpg.send_color((0, 0, 0))
 
     try:
         data_analysis = ColourPrecisionAnalysis(
-            Measurement_List(
+            MeasurementList(
                 test_colors=test_colors.colors,
                 order=test_colors.order.tolist(),
                 measurements=measurements,
@@ -277,11 +276,11 @@ def main():
         )
         print(data_analysis)  # noqa: T201
     except Exception as e:
-        ml = Measurement_List(
+        ml = MeasurementList(
             measurements=measurements,
             order=test_colors.order,
             test_colors=test_colors.colors,
-            metadata=MeasurementList_Notes(notes=args.tile_name),
+            metadata=MeasurementListNotes(notes=args.tile_name),
         )
         save_csmf_file(str(save_path.resolve()), ml)
         raise RuntimeError(

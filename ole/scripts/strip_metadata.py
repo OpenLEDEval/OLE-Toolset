@@ -2,8 +2,8 @@ import argparse
 from pathlib import Path
 
 from specio.serialization.csmf import (
-    Measurement_List,
-    MeasurementList_Notes,
+    MeasurementList,
+    MeasurementListNotes,
     load_csmf_file,
     save_csmf_file,
 )
@@ -24,9 +24,7 @@ def main():
 
     output_path = file_path.parent if args.out_dir is None else Path(args.out_dir)
 
-    file_data.metadata = MeasurementList_Notes(
-        software="colour-workbench file stripper"
-    )
+    file_data.metadata = MeasurementListNotes(software="colour-workbench file stripper")
 
     output_path = output_path.joinpath(
         get_valid_filename(file_data.shortname)
@@ -35,7 +33,7 @@ def main():
 
     print(f"Saving anonymized data: {output_path!s} <- {file_path!s}")
 
-    ml = Measurement_List(
+    ml = MeasurementList(
         test_colors=file_data.test_colors,
         measurements=file_data.measurements,
         metadata=file_data.metadata,
