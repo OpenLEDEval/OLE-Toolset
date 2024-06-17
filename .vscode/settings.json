@@ -86,6 +86,5 @@
   "protoc": {
     "options": ["--proto_path=colour-specio"]
   },
-  "python.analysis.diagnosticMode": "workspace",
   "python.analysis.ignore": ["colour-science", "colour-datasets", "*_pb2.py"]
 }
