@@ -1,5 +1,4 @@
-"""PDF generation for Entertainment Technology Center LED Eval Report
-"""
+"""PDF generation for Entertainment Technology Center LED Eval Report"""
 
 import importlib
 import importlib.resources
@@ -756,7 +755,7 @@ def generate_report_page(
 
     ax = fig.add_subplot(left_col_gs[1])
     plot_chromaticity_error(color_data, ax)
-    fig.set_facecolor((1, 1, 1))  # Why does `colour` set this!?
+    fig.set_facecolor((1, 1, 1))  # type: ignore # Why does `colour` set this!?
 
     ax = fig.add_subplot(left_col_gs[2])
     plot_eotf_accuracy(color_data, ax)

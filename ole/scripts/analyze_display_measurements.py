@@ -3,6 +3,8 @@ Script module for analyzing display measurement files and generating PDFs.
 """
 
 from colour.utilities.verbose import suppress_warnings
+from specio import get_valid_filename
+from specio.serialization.csmf import CSMF_Metadata
 
 
 def main():
@@ -13,14 +15,12 @@ def main():
     from pathlib import Path
 
     from matplotlib import pyplot as plt
-    from specio.serialization.csmf import MeasurementListNotes
 
     from ole.ETC import (
         analyze_measurements_from_file,
         generate_report_page,
     )
     from ole.ETC.analysis import ReflectanceData
-    from ole.utilities import get_valid_filename
 
     program_description = """
     Create the ETC LED Evaluation Report for a particular measurement file.
@@ -72,7 +72,7 @@ def main():
     data = analyze_measurements_from_file(str(in_file))
 
     if args.strip_details:
-        data.metadata = MeasurementListNotes(software=None)
+        data.metadata = CSMF_Metadata(software=None)
         data.shortname = f"ETC Display Analysis - {data.shortname}"
 
     reflectance = (

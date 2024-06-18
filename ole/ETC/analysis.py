@@ -28,8 +28,8 @@ from colour.plotting.common import XYZ_to_plotting_colourspace
 from colour.temperature.ohno2013 import XYZ_to_CCT_Ohno2013
 from sklearn.covariance import EllipticEnvelope, EmpiricalCovariance
 from specio.serialization.csmf import (
-    MeasurementList,
-    MeasurementListNotes,
+    CSMF_Data,
+    CSMF_Metadata,
     load_csmf_file,
 )
 
@@ -72,13 +72,13 @@ class ColourPrecisionAnalysis:
 
     def __init__(
         self,
-        measurements: MeasurementList,
+        measurements: CSMF_Data,
         eotf: Callable[[NDArrayFloat | float], NDArrayFloat] = st_2084.eotf_ST2084,
         eotf_inv: Callable[
             [NDArrayFloat | float], NDArrayFloat
         ] = st_2084.eotf_inverse_ST2084,
     ):
-        self._data: MeasurementList = measurements
+        self._data: CSMF_Data = measurements
 
         self.analysis_conditions = self.AnalysisConditions(
             adapting_luminance=500 / (5 * np.pi)
@@ -433,7 +433,7 @@ class ColourPrecisionAnalysis:
         return self._err
 
     @property
-    def metadata(self) -> MeasurementListNotes:
+    def metadata(self) -> CSMF_Metadata:
         """Measurement metadata.
 
         Returns
@@ -444,7 +444,7 @@ class ColourPrecisionAnalysis:
         return self._data.metadata
 
     @metadata.setter
-    def metadata(self, new_data: MeasurementListNotes):
+    def metadata(self, new_data: CSMF_Metadata):
         self._data.metadata = new_data
 
     @property

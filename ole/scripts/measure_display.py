@@ -8,8 +8,8 @@ from pathlib import Path
 import numpy as np
 import specio.spectrometers.colorimetry_research as cr
 from specio.serialization.csmf import (
-    MeasurementList,
-    MeasurementListNotes,
+    CSMF_Data,
+    CSMF_Metadata,
     save_csmf_file,
 )
 from specio.spectrometers.common import VirtualSpectrometer
@@ -268,7 +268,7 @@ def main():
 
     try:
         data_analysis = ColourPrecisionAnalysis(
-            MeasurementList(
+            CSMF_Data(
                 test_colors=test_colors.colors,
                 order=test_colors.order.tolist(),
                 measurements=measurements,
@@ -276,11 +276,11 @@ def main():
         )
         print(data_analysis)  # noqa: T201
     except Exception as e:
-        ml = MeasurementList(
+        ml = CSMF_Data(
             measurements=measurements,
             order=test_colors.order,
             test_colors=test_colors.colors,
-            metadata=MeasurementListNotes(notes=args.tile_name),
+            metadata=CSMF_Metadata(notes=args.tile_name),
         )
         save_csmf_file(str(save_path.resolve()), ml)
         raise RuntimeError(
