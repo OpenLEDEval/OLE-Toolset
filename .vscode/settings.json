@@ -46,7 +46,7 @@
     },
     {
       "name": "colour",
-      "depth": 4,
+      "depth": 5,
       "includeAllSymbols": false
     },
     {
@@ -90,5 +90,6 @@
   "mypy-type-checker.preferDaemon": true,
   "mypy-type-checker.args": ["--explicit-package-bases"],
   "python.analysis.diagnosticMode": "workspace",
-  "cSpell.words": ["csmf"]
+  "cSpell.words": ["csmf"],
+  "python.terminal.activateEnvironment": false
 }
