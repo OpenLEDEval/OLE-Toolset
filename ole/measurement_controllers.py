@@ -245,7 +245,7 @@ class DisplayMeasureController:
             try:
                 self.generate_random_colors()
                 self.tpg.send_color(test_color)
-                time.sleep(2 / 24)  # One "slow" frame
+                time.sleep(1.032)  # One "slow" frame
 
                 measurement = self.cr.measure()
             except Exception:  # noqa: S112

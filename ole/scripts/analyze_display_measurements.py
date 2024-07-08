@@ -61,6 +61,13 @@ def main():
         help="Remove metadata / notes from the output PDF",
     )
 
+    parser.add_argument(
+        "--sdr",
+        action="store_true",
+        help="Set to flag to use SDR based measurements",
+        required=False,
+    )
+
     args = parser.parse_args()
 
     # Check File
@@ -69,7 +76,7 @@ def main():
         raise FileNotFoundError()
 
     # Analyze data
-    data = analyze_measurements_from_file(str(in_file))
+    data = analyze_measurements_from_file(str(in_file), sdr=args.sdr)
 
     if args.strip_details:
         data.metadata = CSMF_Metadata(software=None)

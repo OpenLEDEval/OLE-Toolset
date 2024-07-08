@@ -151,7 +151,7 @@ def generate_colors(
 
     ramps = np.tile(ramps, (config.ramp_repeats, 1))
 
-    mesh_ramp = 0, *np.linspace(
+    mesh_ramp = np.linspace(
         config.first_light_data_value,
         config.max_channel_value,
         config.mesh_size,

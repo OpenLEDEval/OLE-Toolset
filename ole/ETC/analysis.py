@@ -17,7 +17,7 @@ from colour.colorimetry.spectrum import (
 )
 from colour.colorimetry.tristimulus_values import sd_to_XYZ
 from colour.difference.delta_e import delta_E_CIE2000
-from colour.hints import NDArrayBoolean, NDArrayFloat
+from colour.hints import ArrayLike, NDArrayBoolean, NDArrayFloat
 from colour.models.cie_lab import XYZ_to_Lab
 from colour.models.cie_luv import Luv_to_uv, XYZ_to_Luv
 from colour.models.cie_xyy import XYZ_to_xy, xy_to_XYZ
@@ -77,6 +77,7 @@ class ColourPrecisionAnalysis:
         eotf_inv: Callable[
             [NDArrayFloat | float], NDArrayFloat
         ] = st_2084.eotf_inverse_ST2084,
+        primary_matrix: ArrayLike | None = None,
     ):
         self._data: CSMF_Data = measurements
 
@@ -86,6 +87,9 @@ class ColourPrecisionAnalysis:
         self.shortname = None
         self.eotf = eotf
         self.eotf_inv = eotf_inv
+
+        self._pm = primary_matrix
+
         if np.ptp(self._data.test_colors) > 4096:
             # Special case where a few data files were created with earlier
             # worse versions of specio
@@ -182,8 +186,8 @@ class ColourPrecisionAnalysis:
     @property
     def primary_matrix(self) -> npt.NDArray:
         """The npm of the display"""
-        if hasattr(self, "_pm"):
-            return self._pm
+        if hasattr(self, "_pm") and self._pm is not None:
+            return np.asarray(self._pm)
 
         color_masks = []
         color_masks.append(np.all(self._data.test_colors[:, (1, 2)] == 0, axis=1))
@@ -492,7 +496,9 @@ class ColourPrecisionAnalysis:
         adapting_luminance: float  # luminance of 20% grey object
 
 
-def analyze_measurements_from_file(filename: str | Path) -> ColourPrecisionAnalysis:
+def analyze_measurements_from_file(
+    filename: str | Path, sdr=False
+) -> ColourPrecisionAnalysis:
     """Load the file at `filename` and return the ColorPrecisionAnalysis
 
     Parameters
