@@ -248,7 +248,7 @@ class DisplayMeasureController:
                 time.sleep(1.032)  # One "slow" frame
 
                 measurement = self.cr.measure()
-            except Exception:  # noqa: S112
+            except Exception as e:  # noqa: S112, F841
                 continue  # There was some failure, continue and try again.
             break
         if measurement is None:

@@ -26,6 +26,7 @@ from colour.models.rgb.ictcp import XYZ_to_ICtCp
 from colour.models.rgb.transfer_functions import st_2084
 from colour.plotting.common import XYZ_to_plotting_colourspace
 from colour.temperature.ohno2013 import XYZ_to_CCT_Ohno2013
+from scipy.signal import savgol_filter
 from sklearn.covariance import EllipticEnvelope, EmpiricalCovariance
 from specio.serialization.csmf import (
     CSMF_Data,
@@ -163,8 +164,6 @@ class ColourPrecisionAnalysis:
         if hasattr(self, "_black"):
             return self._black
 
-        from scipy.signal import savgol_filter
-
         tmp = self._black = {}
         tmp["mask"] = mask = np.all(self._data.test_colors == (0, 0, 0), axis=1)
 
@@ -176,7 +175,9 @@ class ColourPrecisionAnalysis:
         tmp["power_stddev"] = np.std([m.power for m in measurements])
 
         tmp["spd"] = np.mean(tmp["values"], axis=1)
-        tmp["spd"] = savgol_filter(tmp["spd"], 5, 2, mode="nearest")
+        tmp["spd"] = savgol_filter(
+            tmp["spd"], window_length=15, polyorder=2, mode="nearest"
+        )
         tmp["spd"] = SpectralDistribution(tmp["spd"], domain=spd_shape)
 
         tmp["XYZ"] = sd_to_XYZ(SpectralDistribution(tmp["spd"], spd_shape), k=683)
@@ -352,9 +353,20 @@ class ColourPrecisionAnalysis:
         if hasattr(self, "_act"):
             return self._act
         act = {}
-        act["XYZ"] = XYZ = (
-            np.asarray([m.XYZ for m in self.measurements]) - self.black["XYZ"]
-        )
+
+        XYZ = []
+        for m in self.measurements:
+            spd_vals = (
+                savgol_filter(
+                    m.spd.values, window_length=15, polyorder=2, mode="nearest"
+                )
+                - self.black["spd"].values
+            )
+            sd = SpectralDistribution(spd_vals, m.spd.wavelengths)
+            XYZ += [sd_to_XYZ(sd.values, shape=sd.shape, k=683, method="Integration")]
+
+        act["XYZ"] = XYZ = np.asarray(XYZ)
+
         act["XYZ"][act["XYZ"] < 0] = 0
         act["ICtCp"] = XYZ_to_ICtCp(XYZ)
         act["Lab"] = XYZ_to_Lab(

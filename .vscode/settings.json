@@ -91,5 +91,9 @@
   "mypy-type-checker.args": ["--explicit-package-bases"],
   "python.analysis.diagnosticMode": "openFilesOnly",
   "cSpell.words": ["csmf"],
-  "python.terminal.activateEnvironment": false
+  "python.terminal.activateEnvironment": true,
+  "austin.binaryMode": true,
+  "austin.lineStats": "Both",
+  "austin.mode": "Wall time",
+  "python.terminal.activateEnvInCurrentTerminal": true
 }

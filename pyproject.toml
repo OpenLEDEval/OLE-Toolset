@@ -67,6 +67,7 @@ skip_glob = ["colour/**/__init__.py"]
 split_on_trailing_comma = true
 use_parentheses = true
 
+
 [tool.pyright]
 reportMissingImports = false
 reportMissingModuleSource = false

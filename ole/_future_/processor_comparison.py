@@ -21,13 +21,16 @@ from ole.tpg_controller import TPGController
 # %% Consts
 
 TPG_IP = "10.10.3.84"
-TILE_STRING = "DS MPLED 2020 PQ"
+TILE_STRING = "DS MPLED NATIVE PQ"
 SAVE_DIR = Path.home().joinpath("Downloads").expanduser()
-SAVE_FILE = "ds_pq_2020.csmf"
+SAVE_FILE = "ds_pq_native.csmf"
 
-# %% Make Measurements
+save_path = Path(SAVE_DIR).joinpath(SAVE_FILE).expanduser()
+save_path = save_path.with_suffix(".csmf")
+save_path.parent.mkdir(parents=True, exist_ok=True)
 
 config = test_configs.PQ_NATIVE_TEST
+# %% Make Measurements
 
 tpg = TPGController(TPG_IP)
 tpg.send_color((800, 400, 800))
@@ -38,7 +41,7 @@ if config.USE_VIRTUAL:
     meter = VirtualSpectrometer()
 else:
     meter = colorimetry_research.CRSpectrometer.discover()
-    meter.measurement_speed = colorimetry_research.MeasurementSpeed.FAST
+    # meter.measurement_speed = colorimetry_research.MeasurementSpeed.NORMAL
 
 
 dmc = DisplayMeasureController(
@@ -48,10 +51,6 @@ dmc = DisplayMeasureController(
     progress_callbacks=[ProgressPrinter()],
 )
 dmc.random_colors_duration = config.STABILIZATION_SECONDS
-
-save_path = Path(SAVE_DIR).joinpath(SAVE_FILE).expanduser()
-save_path = save_path.with_suffix(".csmf")
-save_path.parent.mkdir(parents=True, exist_ok=True)
 
 measurements = dmc.run_measurements(warmup_time=config.WARMUP_MINUTES * 60)
 measurements = np.asarray(measurements)
