@@ -41,7 +41,7 @@ ipykernel = "*"
 networkx = ">= 2.7, < 3"
 opencolorio = ">= 2, < 3"
 tqdm = "*"
-
+echion = "*"
 colour-science = { path = "colour-science", develop = true }
 colour-datasets = { path = "colour-datasets", develop = true }
 colour-specio = { path = "colour-specio", develop = true }
