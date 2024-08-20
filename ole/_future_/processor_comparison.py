@@ -2,6 +2,7 @@
 from pathlib import Path
 
 import numpy as np
+from colour.models.rgb.transfer_functions import st_2084
 from matplotlib import pyplot as plt
 from specio.serialization.csmf import (
     CSMF_Data,
@@ -16,20 +17,40 @@ from ole._future_ import config as test_configs
 from ole.ETC.analysis import ColourPrecisionAnalysis
 from ole.ETC.pdf import generate_report_page
 from ole.measurement_controllers import DisplayMeasureController, ProgressPrinter
+from ole.test_colors import PQ_TestColorsConfig
 from ole.tpg_controller import TPGController
 
 # %% Consts
 
-TPG_IP = "10.10.3.84"
-TILE_STRING = "DS MPLED NATIVE PQ"
-SAVE_DIR = Path.home().joinpath("Downloads").expanduser()
-SAVE_FILE = "ds_pq_native.csmf"
+TPG_IP = "10.19.12.10"
+TILE_STRING = "BP2v2 MVR, PQ, Native, DLUT Off"
+SAVE_DIR = Path.home().joinpath("Downloads/proc_compare").expanduser()
+SAVE_FILE = "bp2v2_mvr_native_02.csmf"
 
 save_path = Path(SAVE_DIR).joinpath(SAVE_FILE).expanduser()
 save_path = save_path.with_suffix(".csmf")
 save_path.parent.mkdir(parents=True, exist_ok=True)
 
-config = test_configs.PQ_NATIVE_TEST
+# config = test_configs.PQ_NATIVE_TEST
+config = test_configs.ProcessorTestConfig(
+    USE_VIRTUAL=False,
+    TCC=PQ_TestColorsConfig(
+        ramp_samples=31,
+        ramp_repeats=1,
+        mesh_size=13,
+        blacks=10,
+        whites=3,
+        random=0,
+        quantized_bits=10,
+        first_light=0.025,
+        max_nits=1450,  # Change based on tile data
+    ),
+    STABILIZATION_SECONDS=1.5,
+    WARMUP_MINUTES=20,
+    EOTF=st_2084.eotf_ST2084,
+    EOTF_INV=st_2084.eotf_inverse_ST2084,
+    NPM=None,
+)
 # %% Make Measurements
 
 tpg = TPGController(TPG_IP)

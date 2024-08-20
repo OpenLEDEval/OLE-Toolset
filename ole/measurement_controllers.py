@@ -94,7 +94,7 @@ class ProgressPrinter:
                         * progress.num_colors
                     )
                     + self.last_call
-                ).strftime("%I:%M %p")
+                ).strftime("%a %d %I:%M %p")
             )
 
         print(progressStr)  # noqa: T201
@@ -209,7 +209,7 @@ class DisplayMeasureController:
         while now_f() - t < datetime.timedelta(seconds=duration):
             c = self._rng.random(size=(3))
             self.tpg.send_color(c * 1023)
-            time.sleep(3 / 24)  # ~12 FPS Maximum
+            time.sleep(1 / 24)  # ~12 FPS Maximum
 
     class MeasurementError(Exception):
         """Raised if a measurement fails after multiple attempts"""
@@ -245,7 +245,7 @@ class DisplayMeasureController:
             try:
                 self.generate_random_colors()
                 self.tpg.send_color(test_color)
-                time.sleep(1.032)  # One "slow" frame
+                time.sleep(1 / 24)  # One "slow" frame
 
                 measurement = self.cr.measure()
             except Exception as e:  # noqa: S112, F841
