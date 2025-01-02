@@ -68,15 +68,22 @@ def main():
         required=False,
     )
 
+    parser.add_argument(
+        "--D65",
+        action="store_true",
+        help="Set to flag to use D65 instead of native white point for all calculations",
+        required=False,
+    )
+
     args = parser.parse_args()
 
     # Check File
-    in_file = Path(args.file)
+    in_file = Path(args.file.strip("\"'"))
     if not in_file.exists() or not in_file.is_file():
-        raise FileNotFoundError()
+        raise FileNotFoundError("Could not find input CSMF File")
 
     # Analyze data
-    data = analyze_measurements_from_file(str(in_file), sdr=args.sdr)
+    data = analyze_measurements_from_file(str(in_file), sdr=args.sdr, D65=args.D65)
 
     if args.strip_details:
         data.metadata = CSMF_Metadata(software=None)
@@ -90,14 +97,16 @@ def main():
 
     # Determine output file name
     if args.out:
-        out_file_name = Path(args.out)
+        out_file_name = Path(args.out.strip("'\""))
         if out_file_name.suffix == ".pdf":
             out_file_name.parent.mkdir(parents=True, exist_ok=True)
         elif out_file_name.suffix != "":
             raise RuntimeError("File name must end in .pdf")
         else:
             out_file_name.mkdir(parents=True, exist_ok=True)
-            out_file_name = out_file_name.joinpath(get_valid_filename(data.shortname))
+            out_file_name = out_file_name.joinpath(
+                get_valid_filename(data.shortname)
+            ).with_suffix(".pdf")
     else:
         out_file_name = in_file.with_suffix(".pdf")
 
@@ -109,11 +118,14 @@ def main():
 
     fig.savefig(str(out_file_name), facecolor=[1, 1, 1])
 
-    print(f"Analysis saved to: {out_file_name!s}")  # noqa: T201
+    print(f"Analysis saved to: '{out_file_name!s}'")  # noqa: T201
     plt.close(fig)
 
 
 if __name__ == "__main__":
     print("Ignoring colour warnings")  # noqa: T201
     with suppress_warnings(colour_warnings=True, python_warnings=True):
-        main()
+        try:
+            main()
+        except Exception as e:
+            print(e)

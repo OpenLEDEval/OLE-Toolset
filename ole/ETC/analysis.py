@@ -9,6 +9,8 @@ from pathlib import Path
 from textwrap import dedent
 from typing import Callable
 
+import colour
+import colour.utilities
 import numpy as np
 import numpy.typing as npt
 from colour.colorimetry.spectrum import (
@@ -79,8 +81,10 @@ class ColourPrecisionAnalysis:
             [NDArrayFloat | float], NDArrayFloat
         ] = st_2084.eotf_inverse_ST2084,
         primary_matrix: ArrayLike | None = None,
+        white_point: ArrayLike | None = None,
     ):
         self._data: CSMF_Data = measurements
+        self._target_whitepoint = np.asarray(white_point, np.float64)
 
         self.analysis_conditions = self.AnalysisConditions(
             adapting_luminance=500 / (5 * np.pi)
@@ -119,7 +123,7 @@ class ColourPrecisionAnalysis:
             )
             / noise
         )
-        return snr > 10
+        return snr > 15
 
     @property
     def _analysis_mask(self) -> NDArrayBoolean:
@@ -226,6 +230,14 @@ class ColourPrecisionAnalysis:
 
         # Fit NPM using colour
         self._pm = normalised_primary_matrix(xy[0:3, :], xy[3, :])
+        if self._target_whitepoint.shape == (2,):
+            self._pm = normalised_primary_matrix(xy[0:3, :], self._target_whitepoint)
+        elif issubclass(type(self._target_whitepoint), np.ndarray):
+            colour.utilities.warning(
+                "Couldn't interpret provided whitepoint, falling "
+                "back to estimated native whitepoint"
+            )
+
         return self._pm
 
     @property
@@ -509,7 +521,7 @@ class ColourPrecisionAnalysis:
 
 
 def analyze_measurements_from_file(
-    filename: str | Path, sdr=False
+    filename: str | Path, sdr=False, D65=False
 ) -> ColourPrecisionAnalysis:
     """Load the file at `filename` and return the ColorPrecisionAnalysis
 
@@ -525,5 +537,14 @@ def analyze_measurements_from_file(
     """
     measurements = load_csmf_file(filename)
 
-    fundamentalData = ColourPrecisionAnalysis(measurements)
+    target_whitepoint = (
+        colour.CCS_ILLUMINANTS["CIE 1931 2 Degree Standard Observer"]["D65"]
+        if D65
+        else None
+    )
+
+    fundamentalData = ColourPrecisionAnalysis(
+        measurements,
+        white_point=target_whitepoint,
+    )
     return fundamentalData

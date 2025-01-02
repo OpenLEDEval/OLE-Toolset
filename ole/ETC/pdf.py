@@ -87,7 +87,8 @@ def plot_chromaticity_error(data: ColourPrecisionAnalysis, ax: Axes | None = Non
                     linewidth=1.5,
                     linestyle="--",
                     zorder=4,
-                )
+                    rasterized=True,
+                ),
             )
         )
     native_gamut_artist = ax.add_patch(
@@ -97,6 +98,7 @@ def plot_chromaticity_error(data: ColourPrecisionAnalysis, ax: Axes | None = Non
             ec=colors[2, :],
             linewidth=1.5,
             zorder=4,
+            rasterized=True,
         )
     )
 
@@ -121,6 +123,7 @@ def plot_chromaticity_error(data: ColourPrecisionAnalysis, ax: Axes | None = Non
             linewidth=0.5,
             length_includes_head=True,
             zorder=6,
+            rasterized=True,
         )
 
     ax.set_ylim(-0.05, 0.64)
@@ -172,6 +175,7 @@ def plot_eotf_accuracy(data: ColourPrecisionAnalysis, ax: Axes | None = None) ->
         s=20,
         color=[0.2, 0.32, 0.6],
         zorder=100,
+        rasterized=True,
     )
     ax.set_yscale("log", base=2)
     ax.set_xscale("log", base=2)
@@ -189,7 +193,12 @@ def plot_eotf_accuracy(data: ColourPrecisionAnalysis, ax: Axes | None = None) ->
     ax.set_xticks((2.0 ** np.arange(6, 11)) - 1, ["63", "127", "255", "511", "1023"])
 
     x_1000nits = data.eotf_inv(1000) * 1023
-    ax.plot([x_1000nits, x_1000nits], [0, 1000], color="#5a9c9e")
+    ax.plot(
+        [x_1000nits, x_1000nits],
+        [0, 1000],
+        color="#5a9c9e",
+        rasterized=True,
+    )
     ax.text(
         x_1000nits - 25,  # type: ignore
         0.15,
@@ -204,6 +213,7 @@ def plot_eotf_accuracy(data: ColourPrecisionAnalysis, ax: Axes | None = None) ->
         np.arange(0, 1023),
         data.eotf(np.arange(0, 1023) / 1023),
         color=[1, 0, 0],
+        rasterized=True,
     )
     ax.set_title("EOTF Performance")
     if data.eotf is pq.eotf_ST2084:
@@ -217,6 +227,7 @@ def plot_eotf_accuracy(data: ColourPrecisionAnalysis, ax: Axes | None = None) ->
         [max_nits, max_nits],
         color="#6f5481",
         zorder=50,
+        rasterized=True,
     )
     ax.text(
         64,
@@ -295,7 +306,12 @@ def plot_wp_accuracy(
             [],
             minor=True,
         )
-        ax.plot([x_max_nits, x_max_nits], ax.get_ylim(), color="#6f5481")
+        ax.plot(
+            [x_max_nits, x_max_nits],
+            ax.get_ylim(),
+            color="#6f5481",
+            rasterized=True,
+        )
         return (max_nits, x_max_nits)
 
     def plot_wp_cct(ax):
@@ -305,7 +321,11 @@ def plot_wp_accuracy(
         ax.set_title("Whitepoint Error")
         ax.set_ylabel("CCT (°K)\n<- Warmer / Cooler ->")
         ax.set_xticks(xticks, [])
-        ax.plot(ax.get_xlim(), (tgt_cct[0], tgt_cct[0]))
+        ax.plot(
+            ax.get_xlim(),
+            (tgt_cct[0], tgt_cct[0]),
+            rasterized=True,
+        )
 
         ax.text(pq.eotf_inverse_ST2084(0.11) * 1013, 6540, "D65", fontsize=8)
         plot_max_nits_line(ax)
@@ -328,6 +348,7 @@ def plot_wp_accuracy(
         ax.scatter(
             pq.eotf_inverse_ST2084(data.eotf(data.grey["uniques"][0] / 1023)) * 1023,
             cct_list[:, 0],
+            rasterized=True,
         )
 
         arrow_size = abs(np.diff(ax.get_ylim()))[0] * 0.15
@@ -347,6 +368,7 @@ def plot_wp_accuracy(
                 head_length=arrow_size / 3.5,
                 length_includes_head=True,
                 ec=[0, 0, 0, 0],
+                rasterized=True,
             )
 
     plot_wp_cct(axs[0])
@@ -364,13 +386,14 @@ def plot_wp_accuracy(
 
         ax.set_xticks(xticks, xtick_labels)
 
-        ax.plot(ax.get_xlim(), (tgt_cct[1], tgt_cct[1]))
+        ax.plot(ax.get_xlim(), (tgt_cct[1], tgt_cct[1]), rasterized=True)
         ax.text(pq.eotf_inverse_ST2084(0.11) * 1013, 0.004, "D65", fontsize=8)
 
         x_max_nits = plot_max_nits_line(ax)
         ax.scatter(
             pq.eotf_inverse_ST2084(data.eotf(data.grey["uniques"][0] / 1023)) * 1023,
             cct_list[:, 1],
+            rasterized=True,
         )
         _plot_y_tolerance_bg(
             ax,
@@ -404,6 +427,7 @@ def plot_wp_accuracy(
                 head_length=arrow_size / 3.5,
                 length_includes_head=True,
                 ec=[0, 0, 0, 0],
+                rasterized=True,
             )
 
         ax.text(
@@ -448,12 +472,14 @@ def plot_brightness_errors(
         deltaI,
         color=[0.5, 0.5, 0.5],
         s=120,
+        rasterized=True,
     )
     ax.scatter(
         data.measured_colors["ICtCp"][:, 0],
         deltaI,
         c=data.test_colors[:] / 1023,  # type: ignore
         s=50,
+        rasterized=True,
     )
     ax.set_yscale("symlog", base=2)
     ax.set_ylim(-(2**5), 2**5)
@@ -474,7 +500,13 @@ def plot_brightness_errors(
     ax.set_xticks(xticks, xtick_labels)
     ax.set_xticks(xticks_minor, minor=True)
 
-    ax.plot([x_max_nits, x_max_nits], ax.get_ylim(), zorder=-1, color="#6f5481")
+    ax.plot(
+        [x_max_nits, x_max_nits],
+        ax.get_ylim(),
+        zorder=-1,
+        color="#6f5481",
+        rasterized=True,
+    )
     ax.text(
         x_max_nits - 0.02,  # type: ignore
         ax.get_ylim()[0] + 1.5**4,
@@ -547,12 +579,14 @@ def plot_chromatic_error(data: ColourPrecisionAnalysis, ax: Axes | None = None) 
         delta_cr,
         color=[0.5, 0.5, 0.5],
         s=120,
+        rasterized=True,
     )
     ax.scatter(
         data.measured_colors["ICtCp"][:, 0],
         delta_cr,
         c=data.test_colors / 1023,  # type: ignore
         s=50,
+        rasterized=True,
     )
     ax.set_yscale("symlog", base=2)
     ax.set_ylim(0, 2**5)
@@ -571,7 +605,7 @@ def plot_chromatic_error(data: ColourPrecisionAnalysis, ax: Axes | None = None) 
     ax.set_xticks(xticks, xtick_labels)
     ax.set_xticks(xticks_minor, minor=True)
 
-    ax.plot([x_max_nits, x_max_nits], ax.get_ylim(), zorder=-1)
+    ax.plot([x_max_nits, x_max_nits], ax.get_ylim(), zorder=-1, rasterized=True)
 
     ax.set_title("Chromatic Error (∆ICtCp)")
 
@@ -731,7 +765,7 @@ def generate_report_page(
         figsize=np.asarray((8.5, 11)),  # type: ignore
         facecolor=(1, 1, 1),
         constrained_layout=True,
-        dpi=100,
+        dpi=300,
     )
     outer_gs = fig.add_gridspec(2, 1, height_ratios=[1, 20])
     outer_gs.update()
