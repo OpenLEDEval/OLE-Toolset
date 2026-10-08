@@ -1,15 +1,9 @@
 # Dependabot keeps uv.lock and the matching pins in pyproject.toml current.
 #
-# Commit prefixes are chosen to interoperate with flywheel, which auto-merges
-# only the conventional types listed in .flywheel.yml (fix, chore, docs) and
-# derives releases from them:
-#
-#   fix(deps)        runtime dependency moved -> auto-merge, cuts a patch release
-#   chore(deps-dev)  dev tooling moved        -> auto-merge, no release
-#
-# `build` is the more literal conventional type for a dependency bump, but it
-# is absent from flywheel's auto_merge list, so those PRs would sit unmerged.
-# Change prefix to "chore" if runtime bumps should never cut a release.
+# Every ecosystem commits as `build(deps):`. flywheel auto-merges only the
+# conventional types listed in .flywheel.yml (fix, chore, docs), so a
+# dependency bump waits for a human review instead of merging on green.
+# A release has a week to draw a follow-up fix before it is proposed.
 #
 # These prefixes also apply to Dependabot *security* PRs. Do not add
 # `target-branch` — security updates always target the default branch, and
@@ -18,16 +12,24 @@
 version: 2
 
 updates:
+  # The git dependency, colour-specio, stays manual: Dependabot's uv parser
+  # drops a direct reference's URL and looks the name up on PyPI, so it skips
+  # it without a PR or an error (dependabot/dependabot-core#16129).
   - package-ecosystem: "uv"
     directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
     commit-message:
-      prefix: "fix"
-      prefix-development: "chore"
+      prefix: "build"
       include: "scope"
     groups:
+      # ruff and pyright bring new findings that need code edits, so they
+      # do not hold up the library bumps.
+      python-lint:
+        patterns: ["ruff", "pyright"]
       # Majors land as individual PRs; the rest batch into one.
       uv-minor-and-patch:
         update-types: ["minor", "patch"]
@@ -36,9 +38,26 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
     commit-message:
-      prefix: "chore"
+      prefix: "build"
       include: "scope"
     groups:
       github-actions:
+        patterns: ["*"]
+
+  # Hook revs in .pre-commit-config.yaml. Keep the ruff-pre-commit rev equal
+  # to the ruff version in uv.lock.
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    groups:
+      pre-commit-hooks:
         patterns: ["*"]

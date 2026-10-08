@@ -1,12 +1,12 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.7
+    rev: v0.16.10
     hooks:
-      - id: ruff
+      - id: ruff-check
         args: [--fix]
       - id: ruff-format
   - repo: https://github.com/streetsidesoftware/cspell-cli
-    rev: v8.17.3
+    rev: v10.3.0
     hooks:
       - id: cspell
         args: [--no-progress]
