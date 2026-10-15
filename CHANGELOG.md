@@ -1,3 +1,10 @@
+## [0.2.3](https://github.com/OpenDisplayEval/display-report/compare/v0.2.2...v0.2.3) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump xxhash from 3.6.0 to 4.0.1 ([#44](https://github.com/OpenDisplayEval/display-report/issues/44)) ([fa56892](https://github.com/OpenDisplayEval/display-report/commit/fa568927889e7e67288c6ff78494cd56b0ef93e4))
+
 ## [0.2.2](https://github.com/OpenDisplayEval/display-report/compare/v0.2.1...v0.2.2) (2026-10-15)
 
 
