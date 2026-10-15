@@ -1,3 +1,10 @@
+## [0.2.4](https://github.com/OpenDisplayEval/display-report/compare/v0.2.3...v0.2.4) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump soupsieve from 2.8.4 to 2.9 ([#49](https://github.com/OpenDisplayEval/display-report/issues/49)) ([e6f591d](https://github.com/OpenDisplayEval/display-report/commit/e6f591d0051bd3fe76bf1952f4fe03fc0b9d339d))
+
 ## [0.2.3](https://github.com/OpenDisplayEval/display-report/compare/v0.2.2...v0.2.3) (2026-10-15)
 
 
