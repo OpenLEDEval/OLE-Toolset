@@ -1,3 +1,38 @@
+## [0.2.5](https://github.com/OpenDisplayEval/display-report/compare/v0.2.4...v0.2.5) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump anyio from 4.12.1 to 4.14.2 ([#50](https://github.com/OpenDisplayEval/display-report/issues/50)) ([fdaa2da](https://github.com/OpenDisplayEval/display-report/commit/fdaa2dacc39bdb4461a133debcb2b15f4914d6d0))
+
+## [0.2.4](https://github.com/OpenDisplayEval/display-report/compare/v0.2.3...v0.2.4) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump soupsieve from 2.8.4 to 2.9 ([#49](https://github.com/OpenDisplayEval/display-report/issues/49)) ([e6f591d](https://github.com/OpenDisplayEval/display-report/commit/e6f591d0051bd3fe76bf1952f4fe03fc0b9d339d))
+
+## [0.2.3](https://github.com/OpenDisplayEval/display-report/compare/v0.2.2...v0.2.3) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump xxhash from 3.6.0 to 4.0.1 ([#44](https://github.com/OpenDisplayEval/display-report/issues/44)) ([fa56892](https://github.com/OpenDisplayEval/display-report/commit/fa568927889e7e67288c6ff78494cd56b0ef93e4))
+
+## [0.2.2](https://github.com/OpenDisplayEval/display-report/compare/v0.2.1...v0.2.2) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump mistune from 3.3.0 to 3.3.3 ([#43](https://github.com/OpenDisplayEval/display-report/issues/43)) ([551f320](https://github.com/OpenDisplayEval/display-report/commit/551f3201e6302d1c841576a8c364d5acb81fc3f4))
+
+## [0.2.1](https://github.com/OpenDisplayEval/display-report/compare/v0.2.0...v0.2.1) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump tornado from 6.5.7 to 6.5.8 ([#42](https://github.com/OpenDisplayEval/display-report/issues/42)) ([829bb47](https://github.com/OpenDisplayEval/display-report/commit/829bb47ce3a903c097d353d31512cdc368fe26ad))
+
 # [0.2.0](https://github.com/OpenDisplayEval/display-report/compare/v0.1.0...v0.2.0) (2026-09-01)
 
 
