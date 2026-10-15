@@ -16,6 +16,7 @@ jobs:
           fetch-depth: 0 # hatch-vcs derives the version from tag history
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
+          prune-cache: true
           python-version: "3.14"
       - run: uv sync --all-groups
       - run: uv run ruff format --check .
@@ -51,6 +52,7 @@ jobs:
           fetch-depth: 0 # hatch-vcs derives the version from tag history
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
+          prune-cache: true
           python-version: ${{ matrix.python-version }}
       - run: uv sync --all-groups
       # Measurement hardware is absent on runners. The package imports
