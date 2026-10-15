@@ -1,3 +1,38 @@
+## [0.2.8](https://github.com/OpenDisplayEval/display-report/compare/v0.2.7...v0.2.8) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump virtualenv from 20.36.1 to 21.7.13 ([#58](https://github.com/OpenDisplayEval/display-report/issues/58)) ([cfee9fb](https://github.com/OpenDisplayEval/display-report/commit/cfee9fb1bf00ab402028db5b8894b9d7b55340cb))
+
+## [0.2.7](https://github.com/OpenDisplayEval/display-report/compare/v0.2.6...v0.2.7) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump urllib3 from 2.7.0 to 2.8.0 ([#57](https://github.com/OpenDisplayEval/display-report/issues/57)) ([7c460bc](https://github.com/OpenDisplayEval/display-report/commit/7c460bcba3da46ffa1c62a6cc667280c91794f61))
+
+## [0.2.6](https://github.com/OpenDisplayEval/display-report/compare/v0.2.5...v0.2.6) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump notebook from 7.5.6 to 7.6.3 ([#56](https://github.com/OpenDisplayEval/display-report/issues/56)) ([a9b8cef](https://github.com/OpenDisplayEval/display-report/commit/a9b8cef78cc5ab666ceee6b6f9a67e1a83e6f976))
+
+## [0.2.5](https://github.com/OpenDisplayEval/display-report/compare/v0.2.4...v0.2.5) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump anyio from 4.12.1 to 4.14.2 ([#50](https://github.com/OpenDisplayEval/display-report/issues/50)) ([fdaa2da](https://github.com/OpenDisplayEval/display-report/commit/fdaa2dacc39bdb4461a133debcb2b15f4914d6d0))
+
+## [0.2.4](https://github.com/OpenDisplayEval/display-report/compare/v0.2.3...v0.2.4) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump soupsieve from 2.8.4 to 2.9 ([#49](https://github.com/OpenDisplayEval/display-report/issues/49)) ([e6f591d](https://github.com/OpenDisplayEval/display-report/commit/e6f591d0051bd3fe76bf1952f4fe03fc0b9d339d))
+
 ## [0.2.3](https://github.com/OpenDisplayEval/display-report/compare/v0.2.2...v0.2.3) (2026-10-15)
 
 
