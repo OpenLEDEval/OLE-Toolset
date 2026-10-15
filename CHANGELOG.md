@@ -1,3 +1,10 @@
+## [0.2.5](https://github.com/OpenDisplayEval/display-report/compare/v0.2.4...v0.2.5) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump anyio from 4.12.1 to 4.14.2 ([#50](https://github.com/OpenDisplayEval/display-report/issues/50)) ([fdaa2da](https://github.com/OpenDisplayEval/display-report/commit/fdaa2dacc39bdb4461a133debcb2b15f4914d6d0))
+
 ## [0.2.4](https://github.com/OpenDisplayEval/display-report/compare/v0.2.3...v0.2.4) (2026-10-15)
 
 
