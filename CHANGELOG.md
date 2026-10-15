@@ -1,3 +1,17 @@
+## [0.2.2](https://github.com/OpenDisplayEval/display-report/compare/v0.2.1...v0.2.2) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump mistune from 3.3.0 to 3.3.3 ([#43](https://github.com/OpenDisplayEval/display-report/issues/43)) ([551f320](https://github.com/OpenDisplayEval/display-report/commit/551f3201e6302d1c841576a8c364d5acb81fc3f4))
+
+## [0.2.1](https://github.com/OpenDisplayEval/display-report/compare/v0.2.0...v0.2.1) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump tornado from 6.5.7 to 6.5.8 ([#42](https://github.com/OpenDisplayEval/display-report/issues/42)) ([829bb47](https://github.com/OpenDisplayEval/display-report/commit/829bb47ce3a903c097d353d31512cdc368fe26ad))
+
 # [0.2.0](https://github.com/OpenDisplayEval/display-report/compare/v0.1.0...v0.2.0) (2026-09-01)
 
 
