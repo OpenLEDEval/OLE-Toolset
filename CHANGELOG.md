@@ -1,3 +1,10 @@
+## [0.2.7](https://github.com/OpenDisplayEval/display-report/compare/v0.2.6...v0.2.7) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump urllib3 from 2.7.0 to 2.8.0 ([#57](https://github.com/OpenDisplayEval/display-report/issues/57)) ([7c460bc](https://github.com/OpenDisplayEval/display-report/commit/7c460bcba3da46ffa1c62a6cc667280c91794f61))
+
 ## [0.2.6](https://github.com/OpenDisplayEval/display-report/compare/v0.2.5...v0.2.6) (2026-10-15)
 
 
