@@ -1,3 +1,10 @@
+## [0.2.8](https://github.com/OpenDisplayEval/display-report/compare/v0.2.7...v0.2.8) (2026-10-15)
+
+
+### Bug Fixes
+
+* **deps:** bump virtualenv from 20.36.1 to 21.7.13 ([#58](https://github.com/OpenDisplayEval/display-report/issues/58)) ([cfee9fb](https://github.com/OpenDisplayEval/display-report/commit/cfee9fb1bf00ab402028db5b8894b9d7b55340cb))
+
 ## [0.2.7](https://github.com/OpenDisplayEval/display-report/compare/v0.2.6...v0.2.7) (2026-10-15)
 
 
